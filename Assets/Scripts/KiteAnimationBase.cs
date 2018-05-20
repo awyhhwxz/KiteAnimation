@@ -22,7 +22,14 @@ public abstract class KiteAnimationBase : IKiteAnimation
 
     public void Play()
     {
-        PlayImpl();
+        if(KiteAnimationContainer.Instance.NeedSkipAnimation)
+        {
+            ToTheEnd();
+        }
+        else
+        {
+            PlayImpl();
+        }
     }
 
     protected virtual void PlayImpl()
