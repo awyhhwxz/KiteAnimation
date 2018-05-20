@@ -28,7 +28,13 @@ public abstract class KiteAnimationBase : IKiteAnimation
     protected virtual void PlayImpl()
     {
         Enable = true;
-        if (!Mathf.Equals(_currentTime, 0.0f))
+        OnAnimationRemoved();
+    }
+
+    public void OnAnimationRemoved()
+    {
+        if (!Mathf.Equals(_currentTime, 0.0f)
+            && !Mathf.Equals(_currentTime, 1.0f))
         {
             InvokeBreakCallBack();
         }
@@ -38,6 +44,7 @@ public abstract class KiteAnimationBase : IKiteAnimation
     {
         Enable = false;
         _currentTime = 0.0f;
+        KiteAnimationContainer.Instance.RemoveAnimation(_rootObj, this.GetType());
     }
 
     public abstract void ToTheEnd();
@@ -49,8 +56,7 @@ public abstract class KiteAnimationBase : IKiteAnimation
     public float Duration { get; set; }
 
     public bool NeedLinearLerpEuler = false;
-
-
+    
     public Action<GameObject, float> PerFrameCallBack;
 
     private Action<KiteAnimationCallBackType, GameObject, float> _completeCallBack;

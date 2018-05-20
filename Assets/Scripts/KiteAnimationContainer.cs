@@ -47,6 +47,46 @@ public class KiteAnimationContainer : MonoBehaviour {
         return targetAnimation;
     }
 
+    public AnimationType GetAnimation<AnimationType>(GameObject obj) where AnimationType : KiteAnimationBase
+    {
+        List<IKiteAnimation> animationList = null;
+        if (_animationCache.TryGetValue(obj, out animationList))
+        {
+            var foundAnimation = animationList.Find(animation => animation.GetType().Equals(typeof(AnimationType)));
+            if (foundAnimation != null)
+            {
+                return foundAnimation as AnimationType;
+            }
+        }
+
+        return null;
+    }
+
+    public void RemoveAnimation<AnimationType>(GameObject obj) where AnimationType : KiteAnimationBase
+    {
+        RemoveAnimation(obj, typeof(AnimationType));
+    }
+
+    public void RemoveAnimation(GameObject obj, System.Type animationType)
+    {
+        List<IKiteAnimation> animationList = null;
+        if (_animationCache.TryGetValue(obj, out animationList))
+        {
+            var foundAnimation = animationList.Find(animation => animation.GetType().Equals(animationType));
+            if(foundAnimation != null)
+            {
+                var animationBase = foundAnimation as KiteAnimationBase;
+                animationBase.OnAnimationRemoved();
+                animationList.Remove(foundAnimation);
+            }
+
+            if(animationList.Count == 0)
+            {
+                _animationCache.Remove(obj);
+            }
+        }
+    }
+
     // Update is called once per frame
     void Update () {
 
